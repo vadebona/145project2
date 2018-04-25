@@ -10,6 +10,17 @@
 #include "lcd.c"
 
 
+struct Clock {
+	int year;
+	int month;
+	int day;
+	
+	int hour;
+	int minute;
+	int second;
+
+};
+
 int is_pressed(int r, int c) {
 	// Set all R's and all C's to N/C
 	DDRC = 0;
@@ -20,7 +31,7 @@ int is_pressed(int r, int c) {
 	CLR_BIT(PORTC, r);
 	
 	// Set c to Weak 1
-	SET_BIT(DDRC, c+4);
+	SET_BIT(DDRC, c+4); // Add 4 to reach pins 4-7 on keypad
 	CLR_BIT(PORTC, c+4);
 	
 	// Change state of button
@@ -43,7 +54,7 @@ int get_key() {
 	}
 }
 
-int main(void)
+int main()
 {
     while (1) {
 		int k = get_key();
@@ -59,5 +70,7 @@ int main(void)
 		// wait 2 seconds
 		wait_avr(2000);
     }
+	
+	return 0;
 }
 
