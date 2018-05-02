@@ -22,7 +22,7 @@ struct Clock {
 
 };
 
-void update_time(Clock c, int s) {
+struct Clock update_time(struct Clock c, int s) {
 	c.second += 1;
 	
 	if(s % 60 == 0) {
@@ -44,10 +44,14 @@ void update_time(Clock c, int s) {
 	if(c.hour > 12) {
 		c.hour = 1;
 	}
-		
+	
+	return c;	
 }
 
-
+ /* struct Clock update_date(struct Clock c, int d) {
+	c.day += 1;
+	
+} */
 
 int is_pressed(int r, int c) {
 	// Set all R's and all C's to N/C
@@ -60,7 +64,8 @@ int is_pressed(int r, int c) {
 	
 	// Set c to Weak 1
 	SET_BIT(DDRC, c+4); // Add 4 to reach pins 4-7 on keypad
-	//CLR_BIT(PORTC, c+4);
+	CLR_BIT(PORTC, c+4);
+	wait_avr(5);
 	
 	// Change state of button
 	if(GET_BIT(PINC, c+4)) {
@@ -86,17 +91,20 @@ int get_key() {
 
 int main()
 {
-	Clock c = {0, 0, 0, 0, 0, 0};
+	struct Clock c = {0, 0, 0, 0, 0, 0};
 	int total_seconds = 0;
+	//int total_days = 0;
+	int months[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; // stores how many days are in each month in an array
 	
 	while(1) {
 		wait_avr(1000);
 		total_seconds += 1;
-		update_time(c, total_seconds);
-	}
+		c = update_time(c, total_seconds);
+		//if(total_seconds % 8640 == 0) { c = update_date(c, total_days); }
+	} 
 	
-    /*
-	while (1) {
+    
+	/*while (1) {
 		int k = get_key();
 		
 		// blink led k times
