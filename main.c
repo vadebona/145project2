@@ -10,6 +10,8 @@
 #include "lcd.c"
 #include <stdio.h>
 
+int months[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; // stores how many days are in each month in an array
+
 
 struct Clock {
 	int year;
@@ -48,10 +50,29 @@ struct Clock update_time(struct Clock c, int s) {
 	return c;	
 }
 
- /* struct Clock update_date(struct Clock c, int d) {
+ struct Clock update_date(struct Clock c, int d) {
 	c.day += 1;
 	
-} */
+	// increment the month:
+	if(c.day > months[c.month-1]) {
+		c.month += 1;
+		c.day = 1;
+	}
+	
+	// Increment the year:
+	if(c.month > 12) {
+		c.month = 1;
+		c.day = 1;
+		c.year += 1;
+		
+		if(c.year % 4 == 0) {
+			months[1] = 29;
+		} else {
+			months[1] = 28;
+		}
+	}
+	
+} 
 
 int is_pressed(int r, int c) {
 	// Set all R's and all C's to N/C
@@ -91,19 +112,18 @@ int get_key() {
 
 int main()
 {
-	struct Clock c = {0, 0, 0, 0, 0, 0};
+	/* struct Clock c = {0, 0, 0, 0, 0, 0};
 	int total_seconds = 0;
 	//int total_days = 0;
-	int months[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; // stores how many days are in each month in an array
 	
 	while(1) {
 		wait_avr(1000);
 		total_seconds += 1;
 		c = update_time(c, total_seconds);
 		//if(total_seconds % 8640 == 0) { c = update_date(c, total_days); }
-	} 
+	} */
 	
-    
+    // TESTING THE KEYPAD:
 	/*while (1) {
 		int k = get_key();
 		
@@ -118,6 +138,18 @@ int main()
 		// wait 2 seconds
 		wait_avr(2000);
     } */
+	
+	// TESTING THE LCD SCREEN:
+	int k;
+	char buf[17];
+	ini_avr();
+	
+	while(1) {
+		k = get_key();
+		pos_lcd(0,0);
+		sprintf(buf, "%02i", k);
+		puts_lcd2(buf);
+	}
 	
 	return 0;
 }
